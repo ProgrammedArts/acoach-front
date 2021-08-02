@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "subscriptions",
+  "info": {
+    "name": "Subscription",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "price": {
+      "type": "integer"
+    },
+    "for": {
+      "type": "enumeration",
+      "enum": [
+        "Premium",
+        "PremiumPlus"
+      ]
+    },
+    "stripePriceId": {
+      "type": "string"
+    }
+  }
+}
