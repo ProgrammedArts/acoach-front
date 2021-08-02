@@ -1,0 +1,18 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-bottom: solid 1px black;
+}
+
+.account {
+  flex-grow: 1;
+  margin-left: 1em;
+  text-align: right;
+}
+
+.buttons > * {
+  margin-left: 1em;
+  margin-right: 1em;
+}
