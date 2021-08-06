@@ -1,18 +1,19 @@
 .container {
   display: flex;
   flex-direction: row;
-  padding: 1em;
+  padding: 0.5em;
   margin-bottom: 1em;
   border-bottom: solid 1px black;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 1em 0 #666;
 }
 
 .account {
-  flex-grow: 1;
   margin-left: 1em;
   text-align: right;
 }
 
-.buttons > * {
-  margin-left: 1em;
+.accountButtons > * {
   margin-right: 1em;
 }

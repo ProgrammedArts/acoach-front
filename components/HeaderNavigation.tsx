@@ -1,6 +1,6 @@
 import useUser from "../hooks/useUser";
 import HeaderLogo from "./HeaderLogo";
-import styles from "./HeaderNavigation.module.css";
+import styles from "./HeaderNavigation.module.scss";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { gql, useQuery } from "@apollo/client";
@@ -44,19 +44,23 @@ export default function HeaderNavigation() {
       <HeaderLogo />
       <div className={styles.account}>
         {me ? (
-          <span className={styles.buttons}>
+          <span className={styles.accountButtons}>
             <span>{me.realname}</span>
             <a href="" onClick={redirectToCustomerPortal}>
               Abonnement
             </a>
-            <a href="" onClick={logoutAndRedirect}>
+            <a href="" className="button-black" onClick={logoutAndRedirect}>
               Déconnexion
             </a>
           </span>
         ) : (
-          <span className={styles.buttons}>
-            <Link href="/signup">Inscription</Link>
-            <Link href="/login">Connexion</Link>
+          <span className={styles.accountButtons}>
+            <Link href="/signup">
+              <a className="button-white">Inscription</a>
+            </Link>
+            <Link href="/login">
+              <a className="button-black">Connexion</a>
+            </Link>
           </span>
         )}
       </div>
