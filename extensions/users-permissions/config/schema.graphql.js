@@ -39,7 +39,7 @@ module.exports = {
       registerWithRealName: {
         description: "Register a user",
         resolverOf: "plugins::users-permissions.auth.register",
-        resolver: async (obj, options, { context }) => {
+        resolver: async (_obj, options, { context }) => {
           context.request.body = _.toPlainObject(options.input);
 
           await strapi.plugins["users-permissions"].controllers.auth.register(
