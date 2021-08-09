@@ -13,26 +13,32 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Bienvenue sur A.Coaching</h1>
+        <Image src="/ac.svg" alt="A.Coach Logo" width={125} height={125} />
+
+        <h1 className={styles.title}>A.Coaching</h1>
 
         <div className={styles.grid}>
-          <span className={styles.card}>
-            <Link href="/pricing" passHref>
-              <a>
-                <h2>Abonnement</h2>
-                <p>Souscrire à un abonnement</p>
-              </a>
-            </Link>
-          </span>
+          <div className={[styles.card, styles.arysOne].join(" ")}>
+            <div className={styles.cardOverlay}>
+              <Link href="/pricing" passHref>
+                <a>
+                  <h2>Abonnement</h2>
+                  <p>Souscrire à un abonnement</p>
+                </a>
+              </Link>
+            </div>
+          </div>
 
-          <span className={styles.card}>
-            <Link href="/watch" passHref>
-              <a>
-                <h2>Entrainement</h2>
-                <p>Accès à la plateforme vidéo</p>
-              </a>
-            </Link>
-          </span>
+          <div className={[styles.card, styles.arysTwo].join(" ")}>
+            <div className={styles.cardOverlay}>
+              <Link href="/watch" passHref>
+                <a>
+                  <h2>Entrainement</h2>
+                  <p>Accès à la plateforme vidéo</p>
+                </a>
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
 
