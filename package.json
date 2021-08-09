@@ -8,7 +8,8 @@
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit --detectOpenHandles",
+    "prepare": "husky install"
   },
   "dependencies": {
     "knex": "0.21.18",
@@ -28,13 +29,17 @@
     "stripe": "^8.165.0"
   },
   "devDependencies": {
+    "eslint-config-prettier": "^8.3.0",
     "faker": "^5.5.3",
     "get-port": "^5.1.1",
     "graphql": "^15.5.1",
     "graphql-request": "^3.5.0",
     "graphql-tag": "^2.12.5",
+    "husky": "^7.0.1",
     "jest": "^27.0.6",
+    "lint-staged": "^11.1.2",
     "node-fetch": "^2.6.1",
+    "prettier": "2.3.2",
     "supertest": "^6.1.4",
     "test-data-bot": "^0.8.0"
   },
@@ -56,5 +61,8 @@
       ".cache"
     ],
     "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

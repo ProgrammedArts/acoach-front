@@ -1,13 +1,13 @@
-const { build, oneOf, fake } = require("test-data-bot");
-const faker = require("faker/locale/fr");
+const { build, oneOf, fake } = require('test-data-bot')
+const faker = require('faker/locale/fr')
 
-const customerBuilder = build("StripeCustomer").fields({
+const customerBuilder = build('StripeCustomer').fields({
   id: fake(() => `cus_${faker.random.alphaNumeric(15)}`),
-  object: "customer",
+  object: 'customer',
   address: null,
   balance: 0,
   created: fake(() => Math.floor(new Date().getTime() / 1000)),
-  currency: "eur",
+  currency: 'eur',
   default_source: null,
   delinquent: false,
   description: null,
@@ -30,17 +30,17 @@ const customerBuilder = build("StripeCustomer").fields({
   phone: null,
   preferred_locales: [],
   shipping: null,
-  tax_exempt: "none",
-});
+  tax_exempt: 'none',
+})
 
-const priceBuilder = build("StripePrice")
+const priceBuilder = build('StripePrice')
   .fields({
     id: fake(() => `price_${faker.random.alphaNumeric(15)}`),
-    object: "price",
+    object: 'price',
     active: true,
-    billing_scheme: "per_unit",
+    billing_scheme: 'per_unit',
     created: fake(() => Math.floor(new Date().getTime() / 1000)),
-    currency: "eur",
+    currency: 'eur',
     livemode: false,
     lookup_key: null,
     metadata: {},
@@ -48,25 +48,25 @@ const priceBuilder = build("StripePrice")
     product: fake(() => `prod_${faker.random.alphaNumeric(15)}`),
     recurring: {
       aggregate_usage: null,
-      interval: "month",
+      interval: 'month',
       interval_count: 1,
-      usage_type: "licensed",
+      usage_type: 'licensed',
     },
-    tax_behavior: "unspecified",
+    tax_behavior: 'unspecified',
     tiers_mode: null,
     transform_quantity: null,
-    type: "recurring",
+    type: 'recurring',
     unit_amount: oneOf(500, 1000, 1500, 2000),
     unit_amount_decimal: null,
   })
   .map((price) => ({
     ...price,
     unit_amount_decimal: price.unit_amount.toString(),
-  }));
+  }))
 
-const sessionBuilder = build("StripeSession").fields({
+const sessionBuilder = build('StripeSession').fields({
   id: fake(() => `cs_test_${faker.random.alphaNumeric(15)}`),
-  object: "checkout.session",
+  object: 'checkout.session',
   allow_promotion_codes: null,
   amount_subtotal: null,
   amount_total: null,
@@ -84,11 +84,11 @@ const sessionBuilder = build("StripeSession").fields({
   livemode: false,
   locale: null,
   metadata: {},
-  mode: "payment",
+  mode: 'payment',
   payment_intent: fake(() => `pi_${faker.random.alphaNumeric(30)}`),
   payment_method_options: {},
-  payment_method_types: ["card"],
-  payment_status: "unpaid",
+  payment_method_types: ['card'],
+  payment_status: 'unpaid',
   setup_intent: null,
   shipping: null,
   shipping_address_collection: null,
@@ -97,11 +97,11 @@ const sessionBuilder = build("StripeSession").fields({
   success_url: fake(() => faker.internet.url()),
   total_details: null,
   url: fake(() => faker.internet.url()),
-});
+})
 
-const subscriptionItemBuilder = build("StripeSubscriptionItem").fields({
+const subscriptionItemBuilder = build('StripeSubscriptionItem').fields({
   id: fake(() => `si_${faker.random.alphaNumeric(15)}`),
-  object: "subscription_item",
+  object: 'subscription_item',
   billing_thresholds: null,
   created: fake(() => Math.floor(new Date().getTime() / 1000)),
   metadata: {},
@@ -109,12 +109,12 @@ const subscriptionItemBuilder = build("StripeSubscriptionItem").fields({
   quantity: 1,
   subscription: `sub_${faker.random.alphaNumeric(15)}`,
   tax_rates: [],
-});
+})
 
-const subscriptionBuilder = build("StripeSubscription")
+const subscriptionBuilder = build('StripeSubscription')
   .fields({
     id: fake(() => `sub_${faker.random.alphaNumeric(15)}`),
-    object: "subscription",
+    object: 'subscription',
     application_fee_percent: null,
     automatic_tax: {
       enabled: false,
@@ -124,29 +124,29 @@ const subscriptionBuilder = build("StripeSubscription")
     cancel_at: null,
     cancel_at_period_end: false,
     canceled_at: null,
-    collection_method: "charge_automatically",
+    collection_method: 'charge_automatically',
     created: fake(() => Math.floor(new Date().getTime() / 1000)),
     current_period_end: fake(() => {
-      const periodEnd = new Date();
-      periodEnd.setMonth(periodEnd.getMonth() + 1);
-      return Math.floor(periodEnd.getTime() / 1000);
+      const periodEnd = new Date()
+      periodEnd.setMonth(periodEnd.getMonth() + 1)
+      return Math.floor(periodEnd.getTime() / 1000)
     }),
     current_period_start: fake(() => Math.floor(new Date().getTime() / 1000)),
-    customer: "cus_JyqRvlUniuvWry",
+    customer: 'cus_JyqRvlUniuvWry',
     days_until_due: null,
-    default_payment_method: "pm_1JKsktIgUx88JzrX0I9ly1af",
+    default_payment_method: 'pm_1JKsktIgUx88JzrX0I9ly1af',
     default_source: null,
     default_tax_rates: [],
     discount: null,
     ended_at: null,
     items: fake(() => {
-      const subscriptionItem = subscriptionItemBuilder();
+      const subscriptionItem = subscriptionItemBuilder()
       return {
-        object: "list",
+        object: 'list',
         data: [subscriptionItem],
         has_more: false,
         url: `/v1/subscription_items?subscription=${subscriptionItem.subscription}`,
-      };
+      }
     }),
     latest_invoice: fake(() => `in_${faker.random.alphaNumeric(20)}`),
     livemode: false,
@@ -162,40 +162,34 @@ const subscriptionBuilder = build("StripeSubscription")
     pending_update: null,
     schedule: null,
     start_date: fake(() => Math.floor(new Date().getTime() / 1000)),
-    status: "active",
+    status: 'active',
     transfer_data: null,
     trial_end: null,
     trial_start: null,
   })
   .map((subscription) => {
-    const startDate = subscription.start_date;
+    const startDate = subscription.start_date
     return {
       ...subscription,
       billing_cycle_anchor: startDate,
       created: startDate,
       current_period_start: startDate,
-    };
-  });
+    }
+  })
 
-const createCustomer = jest.fn((overrides = {}) =>
-  Promise.resolve(customerBuilder(overrides))
-);
+const createCustomer = jest.fn((overrides = {}) => Promise.resolve(customerBuilder(overrides)))
 
-const priceCreate = jest.fn((overrides = {}) => priceBuilder(overrides));
+const priceCreate = jest.fn((overrides = {}) => priceBuilder(overrides))
 
-const priceList = jest.fn((overrides = {}) =>
-  Promise.resolve({ data: [priceBuilder(overrides)] })
-);
+const priceList = jest.fn((overrides = {}) => Promise.resolve({ data: [priceBuilder(overrides)] }))
 
 const createCheckoutSession = jest.fn((overrides = {}) =>
   Promise.resolve(sessionBuilder(overrides))
-);
+)
 
-const webHookConstructEvent = jest.fn();
+const webHookConstructEvent = jest.fn()
 
-const retrieveSubscription = jest.fn((overrides = {}) =>
-  subscriptionBuilder(overrides)
-);
+const retrieveSubscription = jest.fn((overrides = {}) => subscriptionBuilder(overrides))
 
 module.exports = jest.fn(() => {
   const stripeModule = {
@@ -217,10 +211,10 @@ module.exports = jest.fn(() => {
     webhooks: {
       constructEvent: webHookConstructEvent,
     },
-  };
+  }
 
-  return stripeModule;
-});
+  return stripeModule
+})
 
 module.exports.builders = {
   subscription: subscriptionBuilder,
@@ -228,4 +222,4 @@ module.exports.builders = {
   customer: customerBuilder,
   session: sessionBuilder,
   price: priceBuilder,
-};
+}
