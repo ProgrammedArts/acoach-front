@@ -1,12 +1,14 @@
+import { ApolloError } from "@apollo/client";
 import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import useUser from "../hooks/useUser";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login } = useUser();
+  const { login, sendEmailConfirmation } = useUser();
   const { push } = useRouter();
 
   function submitLogin(event: FormEvent<HTMLFormElement>) {
@@ -20,9 +22,22 @@ export default function Login() {
       return;
     }
 
-    login({ email, password }).then(() => {
-      push("/");
-    });
+    login({ email, password }).then(
+      () => {
+        push("/");
+      },
+      ({ graphQLErrors }: ApolloError) => {
+        console.log(graphQLErrors[0]);
+        if (
+          graphQLErrors[0]?.extensions?.exception.data.message[0].messages[0]
+            .id === "Auth.form.error.confirmed"
+        ) {
+          sendEmailConfirmation({ email }).then(() => {
+            alert("Hell yeah");
+          });
+        }
+      }
+    );
   }
 
   return (
@@ -38,6 +53,16 @@ export default function Login() {
         />
         <button type="submit">Connexion</button>
       </form>
+      <Link
+        href={{
+          pathname: "/forgot-password",
+          query: {
+            email,
+          },
+        }}
+      >
+        Mot de passe oublié
+      </Link>
     </div>
   );
 }

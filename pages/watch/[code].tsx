@@ -4,7 +4,7 @@ import styles from "./[code].module.css";
 
 const GET_VIDEO_BY_CODE = gql`
   query GetPremiumVideoByCode($code: String!) {
-    premiumVideos(where: { code: $code }) {
+    workoutVideos(where: { code: $code }) {
       title
       code
     }
@@ -23,14 +23,14 @@ export interface WatchVideoParams {
 export default function WatchVideo() {
   const { query } = useRouter();
 
-  const { data } = useQuery<{ premiumVideos: PremiumVideo[] }>(
+  const { data } = useQuery<{ workoutVideos: PremiumVideo[] }>(
     GET_VIDEO_BY_CODE,
     {
       variables: { code: query.code },
     }
   );
 
-  const video = data?.premiumVideos[0];
+  const video = data?.workoutVideos[0];
 
   return (
     <div>

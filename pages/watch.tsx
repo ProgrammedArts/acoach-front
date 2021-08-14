@@ -3,26 +3,26 @@ import Link from "next/link";
 
 const GET_VIDEOS = gql`
   {
-    premiumVideos {
+    workoutVideos {
       title
       code
     }
   }
 `;
 
-export interface PremiumVideo {
+export interface WorkoutVideo {
   title: string;
   code: string;
 }
 
 export default function Watch() {
-  const { data } = useQuery<{ premiumVideos: PremiumVideo[] }>(GET_VIDEOS);
+  const { data } = useQuery<{ workoutVideos: WorkoutVideo[] }>(GET_VIDEOS);
 
   return (
     <div>
       {data ? (
         <ul>
-          {data.premiumVideos.map(({ code, title }) => (
+          {data.workoutVideos.map(({ code, title }) => (
             <li key={code}>
               <Link href={`/watch/${code}`}>{title}</Link>
             </li>

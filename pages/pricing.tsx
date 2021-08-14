@@ -1,20 +1,20 @@
 import { gql, useQuery, useMutation } from "@apollo/client";
-import useUser from "../hooks/useUser";
 
 const GET_PRICING = gql`
   query {
     subscriptions {
+      id
       name
+      description
       price
-      stripePriceId
     }
   }
 `;
 
 const FIND_CUSTOMER = gql`
-  mutation FindCustomer($email: String!) {
-    findCustomer(input: { email: $email }) {
-      email
+  mutation Checkout($subscriptionId: ID!) {
+    createCheckout(input: { subscriptionId: $subscriptionId }) {
+      url
     }
   }
 `;
@@ -22,24 +22,39 @@ const FIND_CUSTOMER = gql`
 export interface Pricing {
   name: string;
   price: number;
-  stripePriceId: string;
+  id: string;
+}
+
+export interface CreateCheckoutResponse {
+  data: {
+    createCheckout: {
+      url: string;
+    };
+  };
 }
 
 export default function Pricing() {
   const { data } = useQuery<{ subscriptions: Pricing[] }>(GET_PRICING);
-  const { me } = useUser();
-  const [findCustomerMutation] = useMutation(FIND_CUSTOMER);
+  const [checkoutMutation] = useMutation(FIND_CUSTOMER);
 
-  const createCustomer = () => {
-    findCustomerMutation({ variables: { email: me?.email } });
+  const createCustomer = (id: string) => {
+    checkoutMutation({ variables: { subscriptionId: id } }).then(
+      ({
+        data: {
+          createCheckout: { url },
+        },
+      }) => {
+        window.open(url, "_self");
+      }
+    );
   };
 
   return (
     <div>
       {data ? (
         <div>
-          {data.subscriptions.map(({ name, price }) => (
-            <div onClick={createCustomer} key={name}>
+          {data.subscriptions.map(({ name, price, id }) => (
+            <div onClick={() => createCustomer(id)} key={name}>
               {name}
               <br />
               {(price / 100).toFixed(2)}€
