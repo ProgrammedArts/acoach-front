@@ -1,11 +1,9 @@
 .container {
-  min-height: 100vh;
   padding: 0 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .main {
@@ -13,6 +11,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.logoContainer {
+  position: relative;
+  margin: 0 auto;
 }
 
 .footer {
@@ -82,11 +85,11 @@
 }
 
 .arysOne {
-  background: border-box no-repeat url("/arys1.svg");
+  background: border-box no-repeat url('/images/arys1.jpg');
 }
 
 .arysTwo {
-  background: border-box no-repeat url("/arys2.svg");
+  background: border-box no-repeat url('/images/arys2.jpg');
 }
 
 .card {
@@ -124,8 +127,7 @@
     text-decoration: none;
     height: 100%;
     width: 100%;
-    transition: color 0.15s ease, border-color 0.15s ease,
-      background-color 1s ease-out;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 1s ease-out;
     border-radius: inherit;
 
     &:hover,
@@ -135,9 +137,4 @@
       transition: background-color 0.5s ease-out;
     }
   }
-}
-
-.logo {
-  height: 1em;
-  margin-left: 0.5rem;
 }

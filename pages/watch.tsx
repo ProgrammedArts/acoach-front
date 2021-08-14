@@ -1,5 +1,5 @@
-import { useQuery, gql } from "@apollo/client";
-import Link from "next/link";
+import { useQuery, gql } from '@apollo/client'
+import Link from 'next/link'
 
 const GET_VIDEOS = gql`
   {
@@ -8,15 +8,15 @@ const GET_VIDEOS = gql`
       code
     }
   }
-`;
+`
 
 export interface WorkoutVideo {
-  title: string;
-  code: string;
+  title: string
+  code: string
 }
 
 export default function Watch() {
-  const { data } = useQuery<{ workoutVideos: WorkoutVideo[] }>(GET_VIDEOS);
+  const { data } = useQuery<{ workoutVideos: WorkoutVideo[] }>(GET_VIDEOS)
 
   return (
     <div>
@@ -30,5 +30,5 @@ export default function Watch() {
         </ul>
       ) : null}
     </div>
-  );
+  )
 }

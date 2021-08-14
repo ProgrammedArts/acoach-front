@@ -1,9 +1,9 @@
-import useUser from "../hooks/useUser";
-import HeaderLogo from "./HeaderLogo";
-import styles from "./HeaderNavigation.module.scss";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { gql, useQuery } from "@apollo/client";
+import useUser from '../hooks/useUser'
+import HeaderLogo from './HeaderLogo'
+import styles from './HeaderNavigation.module.scss'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { gql, useQuery } from '@apollo/client'
 
 const GET_CUSTOMER_PORTAL = gql`
   query GetCustomerPortal {
@@ -11,31 +11,30 @@ const GET_CUSTOMER_PORTAL = gql`
       url
     }
   }
-`;
+`
 
 export interface CustomerPortal {
-  url: string;
+  url: string
 }
 
 export default function HeaderNavigation() {
-  const { me, logout } = useUser();
-  const { push } = useRouter();
-  const { data, refetch } =
-    useQuery<{ getCustomerPortal: CustomerPortal }>(GET_CUSTOMER_PORTAL);
+  const { me, logout } = useUser()
+  const { push } = useRouter()
+  const { data, refetch } = useQuery<{ getCustomerPortal: CustomerPortal }>(GET_CUSTOMER_PORTAL)
 
   function logoutAndRedirect() {
     logout().then(() => {
-      push("/");
-    });
+      push('/')
+    })
   }
 
   function redirectToCustomerPortal() {
     if (data?.getCustomerPortal) {
       if (data.getCustomerPortal.url) {
-        window.open(data.getCustomerPortal.url);
+        window.open(data.getCustomerPortal.url)
       }
     } else {
-      refetch().then(redirectToCustomerPortal);
+      refetch().then(redirectToCustomerPortal)
     }
   }
 
@@ -65,5 +64,5 @@ export default function HeaderNavigation() {
         )}
       </div>
     </div>
-  );
+  )
 }

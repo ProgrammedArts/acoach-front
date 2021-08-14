@@ -1,12 +1,12 @@
 .container {
   display: flex;
   flex-direction: row;
-  padding: 0.5em;
-  margin-bottom: 1em;
+  padding: 1rem 0.5rem;
+  margin-bottom: 1rem;
   border-bottom: solid 1px black;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 0 1em 0 #666;
+  box-shadow: 0 0 1rem 0 #666;
 }
 
 .account {
@@ -15,5 +15,5 @@
 }
 
 .accountButtons > * {
-  margin-right: 1em;
+  margin-right: 1rem;
 }

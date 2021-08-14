@@ -1,45 +1,42 @@
-import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import useUser from "../hooks/useUser";
+import { useRouter } from 'next/router'
+import { FormEvent, useState } from 'react'
+import useUser from '../hooks/useUser'
 
 export default function SignUp() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordCheck, setPasswordCheck] = useState('')
 
-  const { signUp } = useUser();
-  const { push } = useRouter();
+  const { signUp } = useUser()
+  const { push } = useRouter()
 
   function submitSignUp(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    event.preventDefault()
 
     // validate form
     if (!name) {
-      return;
+      return
     }
     if (!email) {
-      return;
+      return
     }
     if (!password) {
-      return;
+      return
     }
     if (!passwordCheck) {
-      return;
+      return
     }
 
     signUp({ realname: name, email, password }).then(() => {
-      push("/");
-    });
+      push('/')
+    })
   }
 
   return (
     <div>
       <form onSubmit={submitSignUp}>
-        <input
-          placeholder="Nom"
-          onChange={({ target: { value } }) => setName(value)}
-        />
+        <input placeholder="Nom" onChange={({ target: { value } }) => setName(value)} />
         <input
           placeholder="Addresse électronique"
           onChange={({ target: { value } }) => setEmail(value)}
@@ -55,5 +52,5 @@ export default function SignUp() {
         <button type="submit">S&apos;enregistrer</button>
       </form>
     </div>
-  );
+  )
 }

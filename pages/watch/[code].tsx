@@ -1,6 +1,6 @@
-import { useQuery, gql } from "@apollo/client";
-import { useRouter } from "next/router";
-import styles from "./[code].module.css";
+import { useQuery, gql } from '@apollo/client'
+import { useRouter } from 'next/router'
+import styles from './[code].module.css'
 
 const GET_VIDEO_BY_CODE = gql`
   query GetPremiumVideoByCode($code: String!) {
@@ -9,28 +9,25 @@ const GET_VIDEO_BY_CODE = gql`
       code
     }
   }
-`;
+`
 
 export interface PremiumVideo {
-  title: string;
-  code: string;
+  title: string
+  code: string
 }
 
 export interface WatchVideoParams {
-  code: string;
+  code: string
 }
 
 export default function WatchVideo() {
-  const { query } = useRouter();
+  const { query } = useRouter()
 
-  const { data } = useQuery<{ workoutVideos: PremiumVideo[] }>(
-    GET_VIDEO_BY_CODE,
-    {
-      variables: { code: query.code },
-    }
-  );
+  const { data } = useQuery<{ workoutVideos: PremiumVideo[] }>(GET_VIDEO_BY_CODE, {
+    variables: { code: query.code },
+  })
 
-  const video = data?.workoutVideos[0];
+  const video = data?.workoutVideos[0]
 
   return (
     <div>
@@ -48,5 +45,5 @@ export default function WatchVideo() {
         </div>
       ) : null}
     </div>
-  );
+  )
 }

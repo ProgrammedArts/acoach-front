@@ -1,43 +1,43 @@
-import { ApolloError } from "@apollo/client";
-import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
-import Link from "next/link";
-import useUser from "../hooks/useUser";
+import { ApolloError } from '@apollo/client'
+import { useRouter } from 'next/router'
+import { FormEvent, useState } from 'react'
+import Link from 'next/link'
+import useUser from '../hooks/useUser'
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const { login, sendEmailConfirmation } = useUser();
-  const { push } = useRouter();
+  const { login, sendEmailConfirmation } = useUser()
+  const { push } = useRouter()
 
   function submitLogin(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    event.preventDefault()
 
     // validate form
     if (!email) {
-      return;
+      return
     }
     if (!password) {
-      return;
+      return
     }
 
     login({ email, password }).then(
       () => {
-        push("/");
+        push('/')
       },
       ({ graphQLErrors }: ApolloError) => {
-        console.log(graphQLErrors[0]);
+        console.log(graphQLErrors[0])
         if (
-          graphQLErrors[0]?.extensions?.exception.data.message[0].messages[0]
-            .id === "Auth.form.error.confirmed"
+          graphQLErrors[0]?.extensions?.exception.data.message[0].messages[0].id ===
+          'Auth.form.error.confirmed'
         ) {
           sendEmailConfirmation({ email }).then(() => {
-            alert("Hell yeah");
-          });
+            alert('Hell yeah')
+          })
         }
       }
-    );
+    )
   }
 
   return (
@@ -55,7 +55,7 @@ export default function Login() {
       </form>
       <Link
         href={{
-          pathname: "/forgot-password",
+          pathname: '/forgot-password',
           query: {
             email,
           },
@@ -64,5 +64,5 @@ export default function Login() {
         Mot de passe oublié
       </Link>
     </div>
-  );
+  )
 }
