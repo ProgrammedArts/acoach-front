@@ -1,0 +1,15 @@
+.Pricing {
+  display: flex;
+  flex-direction: column;
+
+  .plan {
+    border-top: 1px solid black;
+    min-height: 15rem;
+    padding: 1rem;
+    cursor: pointer;
+
+    &:last-of-type {
+      border-bottom: 1px solid black;
+    }
+  }
+}

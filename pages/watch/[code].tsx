@@ -1,52 +1,46 @@
-import { useQuery, gql } from "@apollo/client";
-import { useRouter } from "next/router";
-import styles from "./[code].module.css";
+import { useQuery, gql } from '@apollo/client'
+import { useRouter } from 'next/router'
+import VdoCipherVideo from '../../components/VdoCipherVideo'
+import styles from './[code].module.css'
 
 const GET_VIDEO_BY_CODE = gql`
-  query GetPremiumVideoByCode($code: String!) {
-    workoutVideos(where: { code: $code }) {
+  query GetWorkoutVideo($id: ID!) {
+    workoutVideo(id: $id) {
       title
-      code
+      otp
+      playbackInfo
     }
   }
-`;
+`
 
 export interface PremiumVideo {
-  title: string;
-  code: string;
+  title: string
+  otp: string
+  playbackInfo: string
 }
 
 export interface WatchVideoParams {
-  code: string;
+  code: string
 }
 
 export default function WatchVideo() {
-  const { query } = useRouter();
+  const { query } = useRouter()
 
-  const { data } = useQuery<{ workoutVideos: PremiumVideo[] }>(
-    GET_VIDEO_BY_CODE,
-    {
-      variables: { code: query.code },
-    }
-  );
+  const { data } = useQuery<{ workoutVideo: PremiumVideo }>(GET_VIDEO_BY_CODE, {
+    variables: { id: query.code },
+    skip: query.code ? false : true,
+  })
 
-  const video = data?.workoutVideos[0];
+  const video = data?.workoutVideo
 
   return (
     <div>
       {video ? (
         <div className={styles.content}>
           <h1 className={styles.title}>{video.title}</h1>
-          <iframe
-            className={styles.video}
-            src={`https://www.cincopa.com/media-platform/iframe.aspx?fid=${video.code}`}
-            frameBorder="0"
-            allowFullScreen
-            scrolling="no"
-            allow="autoplay; fullscreen"
-          ></iframe>
+          <VdoCipherVideo {...video} />
         </div>
       ) : null}
     </div>
-  );
+  )
 }

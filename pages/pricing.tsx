@@ -1,4 +1,5 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation } from '@apollo/client'
+import styles from './pricing.module.scss'
 
 const GET_PRICING = gql`
   query {
@@ -9,7 +10,7 @@ const GET_PRICING = gql`
       price
     }
   }
-`;
+`
 
 const FIND_CUSTOMER = gql`
   mutation Checkout($subscriptionId: ID!) {
@@ -17,25 +18,26 @@ const FIND_CUSTOMER = gql`
       url
     }
   }
-`;
+`
 
 export interface Pricing {
-  name: string;
-  price: number;
-  id: string;
+  name: string
+  price: number
+  id: string
+  description: string
 }
 
 export interface CreateCheckoutResponse {
   data: {
     createCheckout: {
-      url: string;
-    };
-  };
+      url: string
+    }
+  }
 }
 
 export default function Pricing() {
-  const { data } = useQuery<{ subscriptions: Pricing[] }>(GET_PRICING);
-  const [checkoutMutation] = useMutation(FIND_CUSTOMER);
+  const { data } = useQuery<{ subscriptions: Pricing[] }>(GET_PRICING)
+  const [checkoutMutation] = useMutation(FIND_CUSTOMER)
 
   const createCustomer = (id: string) => {
     checkoutMutation({ variables: { subscriptionId: id } }).then(
@@ -44,24 +46,26 @@ export default function Pricing() {
           createCheckout: { url },
         },
       }) => {
-        window.open(url, "_self");
+        window.open(url, '_self')
       }
-    );
-  };
+    )
+  }
 
   return (
-    <div>
+    <div className={styles.Pricing}>
       {data ? (
-        <div>
-          {data.subscriptions.map(({ name, price, id }) => (
-            <div onClick={() => createCustomer(id)} key={name}>
-              {name}
-              <br />
-              {(price / 100).toFixed(2)}€
+        <>
+          {data.subscriptions.map(({ name, price, description, id }) => (
+            <div className={styles.plan} onClick={() => createCustomer(id)} key={id}>
+              <h2>{name}</h2>
+              <h3>{(price / 100).toFixed(2)}€</h3>
+              {description.split('\n').map((item, key) => (
+                <p key={key}>{item}</p>
+              ))}
             </div>
           ))}
-        </div>
+        </>
       ) : null}
     </div>
-  );
+  )
 }

@@ -1,0 +1,25 @@
+.button-black,
+.button-white {
+  border-radius: 100px;
+  border: 1px solid black;
+  font-weight: 700;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+
+  & svg {
+    margin-right: 0.3rem;
+  }
+}
+
+.button-black {
+  background-color: black;
+  color: white;
+}
+
+.button-white {
+  background-color: white;
+  color: black;
+}
+
+.redA {
+  color: #f00;
+}

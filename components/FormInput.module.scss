@@ -1,0 +1,14 @@
+.FormInput {
+  margin: 1rem;
+  margin-bottom: 0.5rem;
+
+  & input {
+    width: 100%;
+    border-radius: 42px;
+    padding: 0.5625rem 1.375rem;
+
+    &::placeholder {
+      color: black;
+    }
+  }
+}

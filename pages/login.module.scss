@@ -1,0 +1,26 @@
+.Login {
+  display: flex;
+  flex-direction: column;
+
+  & form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  & h1 {
+    padding: 0 1rem;
+    margin-bottom: 0;
+  }
+
+  .forgotPassword {
+    margin: auto;
+  }
+
+  .sendEmailConfirmation {
+    margin: 1rem;
+
+    & a {
+      text-decoration: underline;
+    }
+  }
+}
