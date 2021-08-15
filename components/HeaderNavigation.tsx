@@ -1,56 +1,31 @@
+import truncate from 'lodash/truncate'
+import Link from 'next/link'
+import { FaBars } from 'react-icons/fa'
 import useUser from '../hooks/useUser'
 import HeaderLogo from './HeaderLogo'
 import styles from './HeaderNavigation.module.scss'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { gql, useQuery } from '@apollo/client'
-
-const GET_CUSTOMER_PORTAL = gql`
-  query GetCustomerPortal {
-    getCustomerPortal {
-      url
-    }
-  }
-`
 
 export interface CustomerPortal {
   url: string
 }
 
 export default function HeaderNavigation() {
-  const { me, logout } = useUser()
-  const { push } = useRouter()
-  const { data, refetch } = useQuery<{ getCustomerPortal: CustomerPortal }>(GET_CUSTOMER_PORTAL)
-
-  function logoutAndRedirect() {
-    logout().then(() => {
-      push('/')
-    })
-  }
-
-  function redirectToCustomerPortal() {
-    if (data?.getCustomerPortal) {
-      if (data.getCustomerPortal.url) {
-        window.open(data.getCustomerPortal.url)
-      }
-    } else {
-      refetch().then(redirectToCustomerPortal)
-    }
-  }
+  const { me } = useUser()
 
   return (
-    <div className={styles.container}>
+    <div className={styles.HeaderNavigation}>
       <HeaderLogo />
       <div className={styles.account}>
         {me ? (
           <span className={styles.accountButtons}>
-            <span>{me.realname}</span>
-            <a href="" onClick={redirectToCustomerPortal}>
-              Abonnement
-            </a>
-            <a href="" className="button-black" onClick={logoutAndRedirect}>
-              Déconnexion
-            </a>
+            <Link href="/settings" passHref>
+              <a className="button-black">
+                <FaBars />
+                {truncate(me.realname, {
+                  length: 24,
+                })}
+              </a>
+            </Link>
           </span>
         ) : (
           <span className={styles.accountButtons}>

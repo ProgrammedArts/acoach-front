@@ -1,0 +1,15 @@
+.SignUp {
+  display: flex;
+  flex-direction: column;
+
+  & h1 {
+    padding: 0 1rem;
+    margin-bottom: 0;
+  }
+
+  & .loginLink {
+    padding: 0 1rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.67rem;
+  }
+}

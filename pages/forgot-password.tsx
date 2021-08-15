@@ -1,35 +1,52 @@
-import { FormEvent, useState } from "react";
-import useUser from "../hooks/useUser";
+import { FormEvent, useState } from 'react'
+import FormInput from '../components/FormInput'
+import FormSubmit from '../components/FormSubmit'
+import useUser from '../hooks/useUser'
+import styles from './forgot-password.module.scss'
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [emailSent, setEmailSent] = useState(false);
+  const [email, setEmail] = useState('')
+  const [emailSent, setEmailSent] = useState(false)
+  const [requestPending, setRequestPending] = useState(false)
 
-  const { forgotPassword } = useUser();
+  const { forgotPassword } = useUser()
 
   function submitResetPassword(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+    event.preventDefault()
 
     // validate form
     if (!email) {
-      return;
+      return
     }
 
+    setRequestPending(true)
     forgotPassword({ email }).then(() => {
-      setEmailSent(true);
-    });
+      setRequestPending(false)
+      setEmailSent(true)
+    })
   }
 
   return (
-    <div>
+    <div className={styles.ForgotPassword}>
+      <h1>Mot de passe oublié</h1>
+      <div className={styles.explanation}>
+        Si vous avez oublié votre mot de passe vous pouvez le réinitialiser. Pour ce faire, veuillez
+        entre votre adresse e-mail
+      </div>
       <form onSubmit={submitResetPassword}>
-        <input
-          placeholder="Addresse électronique"
+        <FormInput
+          label="Addresse électronique"
+          id="email"
           onChange={({ target: { value } }) => setEmail(value)}
         />
-        <button type="submit">Rénitialiser le mot de passe</button>
+        {emailSent && (
+          <p className={styles.emailSent}>
+            Veuillez cliquer sur le lien que vous allez recevoir dans votre boîte de réception afin
+            de réinitialiser votre mot de passe.
+          </p>
+        )}
+        <FormSubmit disabled={requestPending}>Rénitialiser le mot de passe</FormSubmit>
       </form>
-      {emailSent && <p>Email envoyé.</p>}
     </div>
-  );
+  )
 }

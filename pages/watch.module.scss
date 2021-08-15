@@ -1,0 +1,14 @@
+.Watch {
+  & .videoPreview {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    margin: 1rem 0;
+
+    & img {
+      max-width: 10rem;
+      margin-right: 1rem;
+    }
+  }
+}

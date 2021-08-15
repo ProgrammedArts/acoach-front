@@ -1,0 +1,25 @@
+.Settings {
+  display: flex;
+  flex-direction: column;
+
+  & h1 {
+    padding: 0 1rem;
+  }
+
+  & .linkRow {
+    padding: 1rem;
+    border-top: 1px solid black;
+
+    &:last-of-type {
+      border-bottom: 1px solid black;
+    }
+  }
+
+  & .button {
+    margin-bottom: 0.5rem;
+
+    & svg {
+      margin: 0 0.4rem;
+    }
+  }
+}

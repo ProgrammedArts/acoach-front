@@ -1,4 +1,4 @@
-const CompanyMission = () => {
+export default function CompanyMission() {
   return (
     <div>
       <p>

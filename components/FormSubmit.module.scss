@@ -1,0 +1,21 @@
+.FormSubmit {
+  position: relative;
+  border-radius: 46px;
+  border: none;
+  margin: 1rem auto;
+  padding: 0.5625rem 1.375rem;
+  min-width: 20rem;
+
+  background: black;
+
+  color: white;
+  font-weight: bold;
+
+  &.success {
+    background: green;
+  }
+
+  &.error {
+    background: red;
+  }
+}

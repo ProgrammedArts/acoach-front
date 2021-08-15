@@ -3,8 +3,8 @@ import { setContext } from '@apollo/client/link/context'
 import type { AppProps } from 'next/app'
 import HeaderNavigation from '../components/HeaderNavigation'
 import UserProvider from '../providers/UserProvider'
-import '../styles/globals.css'
 import '../styles/common.scss'
+import '../styles/globals.css'
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:3001/graphql',
