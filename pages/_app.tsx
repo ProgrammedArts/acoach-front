@@ -7,7 +7,7 @@ import '../styles/common.scss'
 import '../styles/globals.css'
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:3001/graphql',
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_END_POINT,
 })
 
 const authLink = setContext((_, { headers }) => {

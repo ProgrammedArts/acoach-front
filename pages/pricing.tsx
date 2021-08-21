@@ -1,4 +1,8 @@
 import { gql, useQuery, useMutation } from '@apollo/client'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect } from 'react'
+import useUser from '../hooks/useUser'
+import { UserState } from '../providers/UserProvider'
 import styles from './pricing.module.scss'
 
 const GET_PRICING = gql`
@@ -38,6 +42,41 @@ export interface CreateCheckoutResponse {
 export default function Pricing() {
   const { data } = useQuery<{ subscriptions: Pricing[] }>(GET_PRICING)
   const [checkoutMutation] = useMutation(FIND_CUSTOMER)
+
+  const { me, isLoggedIn } = useUser()
+  const { push } = useRouter()
+
+  const redirectAuthenticatedUser = useCallback(
+    function redirectAuthenticatedUser(user: UserState) {
+      const { subscription, subscriptionActive, subscriptionEnd, blocked } = user
+
+      if (
+        subscription &&
+        subscriptionEnd &&
+        new Date(subscriptionEnd).getTime() > Date.now() &&
+        subscriptionActive
+      ) {
+        // has an active subscription
+        push('/watch')
+      } else if (
+        blocked ||
+        (subscription &&
+          subscriptionEnd &&
+          new Date(subscriptionEnd).getTime() > Date.now() &&
+          !subscriptionActive)
+      ) {
+        // is blocked or has his/her subscription terminated manually
+        push('/banned')
+      }
+    },
+    [push]
+  )
+
+  useEffect(() => {
+    if (isLoggedIn() && me) {
+      redirectAuthenticatedUser(me)
+    }
+  }, [me, isLoggedIn, push, redirectAuthenticatedUser])
 
   const createCustomer = (id: string) => {
     checkoutMutation({ variables: { subscriptionId: id } }).then(

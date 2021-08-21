@@ -5,7 +5,7 @@ import { FormEvent, ReactNode, useState, useEffect, useCallback, MouseEvent } fr
 import FormInput from '../components/FormInput'
 import FormSubmit from '../components/FormSubmit'
 import useUser from '../hooks/useUser'
-import styles from './Login.module.scss'
+import styles from './login.module.scss'
 import isEmail from 'validator/lib/isEmail'
 import validatePassword from '../helpers/validatePassword'
 import ErrorMessage from '../components/ErrorMessage'
@@ -38,7 +38,7 @@ export default function Login({ children }: { children?: ReactNode }) {
         blocked ||
         (subscription &&
           subscriptionEnd &&
-          new Date(subscriptionEnd).getTime() < Date.now() &&
+          new Date(subscriptionEnd).getTime() > Date.now() &&
           !subscriptionActive)
       ) {
         // is blocked or has his/her subscription terminated manually
