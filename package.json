@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start -p $PORT",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest --watch",
+    "coverage": "jest --collectCoverage"
   },
   "dependencies": {
     "@apollo/client": "^3.3.21",
@@ -26,14 +28,34 @@
     "validator": "^13.6.0"
   },
   "devDependencies": {
+    "@jackfranklin/test-data-bot": "^1.3.0",
+    "@testing-library/dom": "^8.1.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/react-hooks": "^7.0.1",
+    "@testing-library/user-event": "^13.2.1",
+    "@types/faker": "^5.5.8",
+    "@types/jest-axe": "^3.5.2",
+    "@types/node-fetch": "^2.5.12",
     "@types/react": "17.0.14",
+    "@types/uuid": "^8.3.1",
+    "babel-jest": "^27.0.6",
     "eslint": "7.31.0",
     "eslint-config-next": "11.0.1",
     "eslint-config-prettier": "^8.3.0",
+    "faker": "^5.5.3",
     "husky": "^7.0.1",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.0.6",
+    "jest-axe": "^5.0.1",
+    "jest-localstorage-mock": "^2.4.16",
     "lint-staged": "^11.1.2",
+    "msw": "^0.34.0",
+    "node-fetch": "^2.6.1",
     "prettier": "^2.3.2",
-    "typescript": "4.3.5"
+    "react-test-renderer": "^17.0.2",
+    "typescript": "4.3.5",
+    "uuid": "^8.3.2"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

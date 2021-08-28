@@ -1,12 +1,12 @@
-import { gql, useQuery, useMutation } from '@apollo/client'
-import { useRouter } from 'next/router'
-import { useCallback, useEffect } from 'react'
-import useUser from '../hooks/useUser'
-import { UserState } from '../providers/UserProvider'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import { useEffect } from 'react'
+import { useState } from 'react'
+import ErrorMessage from '../components/ErrorMessage'
+import useUserRedirection from '../hooks/useUserRedirection'
 import styles from './pricing.module.scss'
 
 const GET_PRICING = gql`
-  query {
+  query GetPricing {
     subscriptions {
       id
       name
@@ -40,55 +40,52 @@ export interface CreateCheckoutResponse {
 }
 
 export default function Pricing() {
-  const { data } = useQuery<{ subscriptions: Pricing[] }>(GET_PRICING)
+  const { data, error } = useQuery<{ subscriptions: Pricing[] }>(GET_PRICING)
   const [checkoutMutation] = useMutation(FIND_CUSTOMER)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const { me, isLoggedIn } = useUser()
-  const { push } = useRouter()
-
-  const redirectAuthenticatedUser = useCallback(
-    function redirectAuthenticatedUser(user: UserState) {
-      const { subscription, subscriptionActive, subscriptionEnd, blocked } = user
-
-      if (
-        subscription &&
-        subscriptionEnd &&
-        new Date(subscriptionEnd).getTime() > Date.now() &&
-        subscriptionActive
-      ) {
-        // has an active subscription
-        push('/watch')
-      } else if (
-        blocked ||
-        (subscription &&
-          subscriptionEnd &&
-          new Date(subscriptionEnd).getTime() > Date.now() &&
-          !subscriptionActive)
-      ) {
-        // is blocked or has his/her subscription terminated manually
-        push('/banned')
-      }
-    },
-    [push]
-  )
-
-  useEffect(() => {
-    if (isLoggedIn() && me) {
-      redirectAuthenticatedUser(me)
-    }
-  }, [me, isLoggedIn, push, redirectAuthenticatedUser])
+  const userSwitch = useUserRedirection({
+    auto: false,
+  })
 
   const createCustomer = (id: string) => {
-    checkoutMutation({ variables: { subscriptionId: id } }).then(
-      ({
-        data: {
-          createCheckout: { url },
+    function attemptCheckout() {
+      checkoutMutation({ variables: { subscriptionId: id } }).then(
+        ({
+          data: {
+            createCheckout: { url },
+          },
+        }) => {
+          window.open(url, '_self')
         },
-      }) => {
-        window.open(url, '_self')
-      }
-    )
+        () => {
+          setErrorMessage('Une erreur serveur est survenue.')
+        }
+      )
+    }
+
+    userSwitch({
+      onAuthenticated: attemptCheckout,
+      onUnauthenticated: ({ push }) => push('/login'),
+      onBlocked: () =>
+        setErrorMessage(
+          "Vous n'êtes pas autorisé à prendre un abonnement. Veuillez nous contacter pour plus d'informations"
+        ),
+      onSuspended: () =>
+        setErrorMessage(
+          "Vous n'êtes pas autorisé à prendre un abonnement. Veuillez nous contacter pour plus d'informations"
+        ),
+      onSubscribedUser: () => setErrorMessage('Vous êtes déjà abonné.'),
+    })
   }
+
+  useEffect(() => {
+    if (error) {
+      setErrorMessage('Une erreur serveur est survenue.')
+    } else {
+      setErrorMessage('')
+    }
+  }, [error])
 
   return (
     <div className={styles.Pricing}>
@@ -105,6 +102,7 @@ export default function Pricing() {
           ))}
         </>
       ) : null}
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </div>
   )
 }

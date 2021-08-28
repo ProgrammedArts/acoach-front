@@ -18,7 +18,7 @@ export default function HeaderNavigation() {
       <div className={styles.account}>
         {me ? (
           <span className={styles.accountButtons}>
-            <Link href="/settings" passHref>
+            <Link href="/account" passHref>
               <a className="button-black">
                 <FaBars />
                 {truncate(me.realname, {

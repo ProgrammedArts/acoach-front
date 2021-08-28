@@ -1,9 +1,8 @@
-import { useQuery, gql } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect } from 'react'
+import ErrorMessage from '../../components/ErrorMessage'
 import VdoCipherVideo from '../../components/VdoCipherVideo'
-import useUser from '../../hooks/useUser'
-import { UserState } from '../../providers/UserProvider'
+import useUserRedirection from '../../hooks/useUserRedirection'
 import styles from './[code].module.css'
 
 const GET_VIDEO_BY_CODE = gql`
@@ -27,44 +26,17 @@ export interface WatchVideoParams {
 }
 
 export default function WatchVideo() {
-  const { query, push } = useRouter()
+  const { query } = useRouter()
 
-  const { me, isLoggedIn } = useUser()
+  useUserRedirection({
+    onUnauthenticated: ({ replace }) => replace('/login'),
+    onAuthenticated: ({ replace }) => replace('/pricing'),
+    onBlocked: ({ replace }) => replace('/?blocked=true'),
+    onSuspended: ({ replace }) => replace('/?suspended=true'),
+    onSubscribedUser: null,
+  })
 
-  const redirectAuthenticatedUser = useCallback(
-    function redirectAuthenticatedUser(user: UserState) {
-      const { subscription, subscriptionActive, subscriptionEnd, blocked } = user
-
-      if (
-        blocked ||
-        (subscription &&
-          subscriptionEnd &&
-          new Date(subscriptionEnd).getTime() > Date.now() &&
-          !subscriptionActive)
-      ) {
-        // is blocked or has his/her subscription terminated manually
-        push('/banned')
-      } else if (
-        !blocked &&
-        (!subscription ||
-          (subscription && subscriptionEnd && new Date(subscriptionEnd).getTime() < Date.now()))
-      ) {
-        // no active subscription or subscription expired
-        push('/pricing')
-      }
-    },
-    [push]
-  )
-
-  useEffect(() => {
-    if (isLoggedIn() && me) {
-      redirectAuthenticatedUser(me)
-    } else if (!isLoggedIn()) {
-      push('/pricing')
-    }
-  }, [me, isLoggedIn, push, redirectAuthenticatedUser])
-
-  const { data } = useQuery<{ workoutVideo: PremiumVideo }>(GET_VIDEO_BY_CODE, {
+  const { data, error } = useQuery<{ workoutVideo: PremiumVideo }>(GET_VIDEO_BY_CODE, {
     variables: { id: query.code },
     skip: query.code ? false : true,
   })
@@ -79,6 +51,7 @@ export default function WatchVideo() {
           <VdoCipherVideo {...video} />
         </div>
       ) : null}
+      {error && <ErrorMessage>Une erreur serveur est survenue.</ErrorMessage>}
     </div>
   )
 }

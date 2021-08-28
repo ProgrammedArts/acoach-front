@@ -1,14 +1,14 @@
-import { useRouter } from 'next/router'
 import Link from 'next/link'
 import React, { FormEvent, useState } from 'react'
+import isEmail from 'validator/lib/isEmail'
+import ErrorMessage from '../components/ErrorMessage'
 import FormInput from '../components/FormInput'
 import FormSubmit from '../components/FormSubmit'
-import useUser from '../hooks/useUser'
-import styles from './signup.module.scss'
-import isEmail from 'validator/lib/isEmail'
-import validatePassword from '../helpers/validatePassword'
-import ErrorMessage from '../components/ErrorMessage'
 import SuccessMessage from '../components/SuccessMessage'
+import validatePassword from '../helpers/validatePassword'
+import useUser from '../hooks/useUser'
+import useUserRedirection from '../hooks/useUserRedirection'
+import styles from './signup.module.scss'
 
 export default function SignUp() {
   const [name, setName] = useState('')
@@ -21,24 +21,32 @@ export default function SignUp() {
 
   const { signUp } = useUser()
 
+  useUserRedirection({
+    onUnauthenticated: null,
+    onSuspended: ({ replace }) => replace('/?suspended=true'),
+    onBlocked: ({ replace }) => replace('/?blocked=true'),
+    onAuthenticated: ({ replace }) => replace('/'),
+    onSubscribedUser: ({ replace }) => replace('/'),
+  })
+
   async function submitSignUp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     // validate form
     if (!name) {
-      setErrorMessage('Veuillez entrer un nom')
+      setErrorMessage('Veuillez entrer un nom.')
       return
     }
     if (!isEmail(email)) {
-      setErrorMessage('Veuillez entrer une adresse e-mail valide')
+      setErrorMessage('Veuillez entrer une adresse e-mail valide.')
       return
     }
     if (!validatePassword(password)) {
-      setErrorMessage('Le mot de passe doit avoir au moins 8 caractères et au moins 1 chiffre')
+      setErrorMessage('Le mot de passe doit avoir au moins 8 caractères et au moins 1 chiffre.')
       return
     }
     if (password !== passwordCheck) {
-      setErrorMessage('Le mot de passe et la confirmation du mot de passe doivent être les mêmes')
+      setErrorMessage('Le mot de passe et la confirmation du mot de passe doivent être les mêmes.')
       return
     }
 
@@ -46,14 +54,14 @@ export default function SignUp() {
     try {
       await signUp({ realname: name, email, password })
       setSuccessMessage(
-        'Compte créé avec succès. Veuillez valider votre e-mail en cliquant sur lien que vous allez recevoir dans votre boîte mail.'
+        'Le compte a été créé avec succès. Veuillez valider votre e-mail en cliquant sur lien que vous allez recevoir dans votre boîte de réception.'
       )
       setName('')
       setEmail('')
       setPassword('')
       setPasswordCheck('')
     } catch (e) {
-      setErrorMessage('Une erreur est survenue. Veuillez réessayer ultérieurement.')
+      setErrorMessage('Une erreur serveur est survenue.')
     }
     setRequestPending(false)
   }
@@ -95,6 +103,7 @@ export default function SignUp() {
       <FormSubmit
         disabled={requestPending}
         status={successMessage ? 'success' : errorMessage ? 'error' : 'default'}
+        role="button"
       >
         S&apos;enregistrer
       </FormSubmit>
