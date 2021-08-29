@@ -20,9 +20,9 @@ export default function Login() {
 
   const redirectUser = useUserRedirection({
     onAuthenticated: ({ replace }) => replace('/pricing'),
-    onBlocked: ({ replace }) => replace('/?blocked=true'),
+    onBlocked: ({ replace }) => replace('/'),
     onSubscribedUser: ({ replace }) => replace('/'),
-    onSuspended: ({ replace }) => replace('/?suspended=true'),
+    onSuspended: ({ replace }) => replace('/'),
     onUnauthenticated: ({ replace }) => replace('/'),
     auto: false,
   })

@@ -19,8 +19,8 @@ export default function ForgotPassword() {
   useUserRedirection({
     onUnauthenticated: null,
     onAuthenticated: ({ replace }) => replace('/pricing'),
-    onBlocked: ({ replace }) => replace('/?blocked=true'),
-    onSuspended: ({ replace }) => replace('/?suspended=true'),
+    onBlocked: ({ replace }) => replace('/'),
+    onSuspended: ({ replace }) => replace('/'),
     onSubscribedUser: ({ replace }) => replace('/'),
   })
 

@@ -212,7 +212,7 @@ describe('useUserRedirection hook', () => {
       })
 
       expect(mockReplace).toHaveBeenCalledTimes(1)
-      expect(mockReplace).toHaveBeenCalledWith('/?blocked=true')
+      expect(mockReplace).toHaveBeenCalledWith('/')
     })
 
     it('Redirects to home if user is logged with a disabled subscription', async () => {
@@ -227,7 +227,7 @@ describe('useUserRedirection hook', () => {
       })
 
       expect(mockReplace).toHaveBeenCalledTimes(1)
-      expect(mockReplace).toHaveBeenCalledWith('/?suspended=true')
+      expect(mockReplace).toHaveBeenCalledWith('/')
     })
 
     it('Redirects to pricing if user is logged without any subscription', async () => {

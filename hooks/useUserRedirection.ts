@@ -46,12 +46,12 @@ export default function useUserRedirection(
   )
 
   const blockedCallback = useCallback(
-    () => callbackHandler(onBlocked, ({ replace }) => replace('/?blocked=true')),
+    () => callbackHandler(onBlocked, ({ replace }) => replace('/')),
     [callbackHandler, onBlocked]
   )
 
   const suspendedCallback = useCallback(
-    () => callbackHandler(onSuspended, ({ replace }) => replace('/?suspended=true')),
+    () => callbackHandler(onSuspended, ({ replace }) => replace('/')),
     [callbackHandler, onSuspended]
   )
 

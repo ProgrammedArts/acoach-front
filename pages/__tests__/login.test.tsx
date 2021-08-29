@@ -58,76 +58,36 @@ function mockLogin(jwt?: string) {
   return spy
 }
 
-function mockEmailRequiresConfirmation() {
+function mockLoginError(
+  strapiError?: 'Auth.form.error.confirmed' | 'Auth.form.error.invalid' | 'Auth.form.error.blocked'
+) {
   const spy = jest.fn()
   server.use(
     graphql.mutation('Login', (req, res, ctx) => {
       spy(req)
       return res(
-        ctx.status(200),
         ctx.errors([
-          {
-            extensions: {
-              exception: {
-                data: {
-                  message: [
-                    {
-                      messages: [
+          strapiError
+            ? {
+                extensions: {
+                  exception: {
+                    data: {
+                      message: [
                         {
-                          id: 'Auth.form.error.confirmed',
+                          messages: [
+                            {
+                              id: strapiError,
+                            },
+                          ],
                         },
                       ],
                     },
-                  ],
+                  },
                 },
-              },
-            },
-          },
+              }
+            : {},
         ])
       )
-    })
-  )
-  return spy
-}
-
-function mockWrongCredentials() {
-  const spy = jest.fn()
-  server.use(
-    graphql.mutation('Login', (req, res, ctx) => {
-      spy(req)
-      return res(
-        ctx.status(200),
-        ctx.errors([
-          {
-            extensions: {
-              exception: {
-                data: {
-                  message: [
-                    {
-                      messages: [
-                        {
-                          id: 'Auth.form.error.invalid',
-                        },
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        ])
-      )
-    })
-  )
-  return spy
-}
-
-function mockServerError() {
-  const spy = jest.fn()
-  server.use(
-    graphql.mutation('Login', (req, res, ctx) => {
-      spy(req)
-      return res(ctx.status(200), ctx.errors([{}]))
     })
   )
   return spy
@@ -235,7 +195,7 @@ describe('Login page', () => {
     const email = faker.internet.email()
     const password = 'AV4l1dP4ssw0rd'
     const meQuery = mockUserQuery()
-    const loginSpy = mockWrongCredentials()
+    const loginSpy = mockLoginError('Auth.form.error.invalid')
     const { container } = render(<Login />, { wrapper: Providers })
 
     await waitFor(() => {
@@ -268,7 +228,7 @@ describe('Login page', () => {
     const email = faker.internet.email()
     const password = 'AV4l1dP4ssw0rd'
     const meQuery = mockUserQuery()
-    const loginSpy = mockServerError()
+    const loginSpy = mockLoginError()
     const { container } = render(<Login />, { wrapper: Providers })
 
     await waitFor(() => {
@@ -324,7 +284,7 @@ describe('Login page', () => {
 
     expect(loginSpy).not.toHaveBeenCalled()
     expect(mockReplace).toHaveBeenCalledTimes(1)
-    expect(mockReplace).toHaveBeenCalledWith('/?blocked=true')
+    expect(mockReplace).toHaveBeenCalledWith('/')
   })
 
   it('Redirects to home when browsing the page as suspended user', async () => {
@@ -339,7 +299,7 @@ describe('Login page', () => {
 
     expect(loginSpy).not.toHaveBeenCalled()
     expect(mockReplace).toHaveBeenCalledTimes(1)
-    expect(mockReplace).toHaveBeenCalledWith('/?suspended=true')
+    expect(mockReplace).toHaveBeenCalledWith('/')
   })
 
   it('Redirects to home when browsing the page as subscribed user', async () => {
@@ -361,7 +321,7 @@ describe('Login page', () => {
     const email = faker.internet.email()
     const password = 'AV4l1dP4ssw0rd'
     const meQuery = mockUserQuery()
-    const loginSpy = mockEmailRequiresConfirmation()
+    const loginSpy = mockLoginError('Auth.form.error.confirmed')
     const sendEmailConfirmationSpy = mockSendEmailConfirmation()
     const { container } = render(<Login />, { wrapper: Providers })
 
@@ -404,7 +364,7 @@ describe('Login page', () => {
     const email = faker.internet.email()
     const password = 'AV4l1dP4ssw0rd'
     const meQuery = mockUserQuery()
-    const loginSpy = mockEmailRequiresConfirmation()
+    const loginSpy = mockLoginError('Auth.form.error.confirmed')
     const sendEmailConfirmationSpy = mockSendEmailConfirmationError()
     const { container } = render(<Login />, { wrapper: Providers })
 
@@ -447,7 +407,7 @@ describe('Login page', () => {
     const email = faker.internet.email()
     const password = 'AV4l1dP4ssw0rd'
     const meQuery = mockUserQuery()
-    const loginSpy = mockEmailRequiresConfirmation()
+    const loginSpy = mockLoginError('Auth.form.error.confirmed')
     const sendEmailConfirmationErrorSpy = mockSendEmailConfirmationError()
     render(<Login />, { wrapper: Providers })
 
@@ -492,6 +452,41 @@ describe('Login page', () => {
     expect(emailConfirmationMessage).not.toBeInTheDocument()
     expect(errorMessage).not.toBeInTheDocument()
     expect(mockReplace).not.toHaveBeenCalled()
+  })
+
+  it('Shows an error if the user is blocked', async () => {
+    const email = faker.internet.email()
+    const password = 'AV4l1dP4ssw0rd'
+    const meQuery = mockUserQuery()
+    const loginSpy = mockLoginError('Auth.form.error.blocked')
+    const { container } = render(<Login />, { wrapper: Providers })
+
+    await waitFor(() => {
+      expect(meQuery).toHaveBeenCalled()
+    })
+
+    const emailInput = screen.getByPlaceholderText(/adresse e-mail/i)
+    user.type(emailInput, email)
+    const passwordInput = screen.getByPlaceholderText(/mot de passe/i)
+    user.type(passwordInput, password)
+    const submitButton = screen.getByRole('button')
+
+    expect(mockReplace).not.toHaveBeenCalled()
+
+    user.click(submitButton)
+
+    const errorMessage = await screen.findByText(
+      /cet utilisateur est bloqué. Veuillez contacter l'administrateur du site/i
+    )
+
+    expect(loginSpy).toHaveBeenCalledTimes(1)
+    expect(loginSpy.mock.calls[0][0].variables.email).toEqual(email)
+    expect(loginSpy.mock.calls[0][0].variables.password).toEqual(password)
+    expect(errorMessage).toBeInTheDocument()
+    expect(mockReplace).not.toHaveBeenCalled()
+
+    // accessibility check
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   describe('Form validation', () => {

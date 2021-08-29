@@ -20,4 +20,16 @@
       margin-right: 0;
     }
   }
+
+  &.subscriptionInactive {
+    margin-bottom: 0;
+  }
+}
+
+.subscriptionInactiveMessage {
+  border: 1px solid goldenrod;
+  border-top: none;
+  background: lightgoldenrodyellow;
+  padding: 1rem;
+  margin-bottom: 1rem;
 }

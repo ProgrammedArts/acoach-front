@@ -126,7 +126,7 @@ describe('Watch video page', () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
     })
-    expect(mockReplace).toHaveBeenCalledWith('/?blocked=true')
+    expect(mockReplace).toHaveBeenCalledWith('/')
   })
 
   it('Redirects to home if suspended', async () => {
@@ -136,7 +136,7 @@ describe('Watch video page', () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
     })
-    expect(mockReplace).toHaveBeenCalledWith('/?suspended=true')
+    expect(mockReplace).toHaveBeenCalledWith('/')
   })
 
   it('Shows the video to subscribed users', async () => {

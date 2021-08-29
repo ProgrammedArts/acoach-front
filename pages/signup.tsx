@@ -5,6 +5,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import FormInput from '../components/FormInput'
 import FormSubmit from '../components/FormSubmit'
 import SuccessMessage from '../components/SuccessMessage'
+import getStrapGQLError from '../helpers/getStrapiGQLError'
 import validatePassword from '../helpers/validatePassword'
 import useUser from '../hooks/useUser'
 import useUserRedirection from '../hooks/useUserRedirection'
@@ -23,8 +24,8 @@ export default function SignUp() {
 
   useUserRedirection({
     onUnauthenticated: null,
-    onSuspended: ({ replace }) => replace('/?suspended=true'),
-    onBlocked: ({ replace }) => replace('/?blocked=true'),
+    onSuspended: ({ replace }) => replace('/'),
+    onBlocked: ({ replace }) => replace('/'),
     onAuthenticated: ({ replace }) => replace('/'),
     onSubscribedUser: ({ replace }) => replace('/'),
   })
@@ -61,7 +62,12 @@ export default function SignUp() {
       setPassword('')
       setPasswordCheck('')
     } catch (e) {
-      setErrorMessage('Une erreur serveur est survenue.')
+      const strapiError = getStrapGQLError(e)
+      if (strapiError?.id === 'Auth.form.error.email.taken') {
+        setErrorMessage('Un compte avec cet email existe déjà.')
+      } else {
+        setErrorMessage('Une erreur serveur est survenue.')
+      }
     }
     setRequestPending(false)
   }

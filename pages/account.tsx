@@ -1,20 +1,22 @@
 import { gql, useQuery } from '@apollo/client'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useRef } from 'react'
 import { FaFileInvoice, FaSignOutAlt, FaUnlockAlt } from 'react-icons/fa'
-import { CustomerPortal } from '../components/HeaderNavigation'
 import useUser from '../hooks/useUser'
 import useUserRedirection from '../hooks/useUserRedirection'
 import styles from './account.module.scss'
 
-const GET_CUSTOMER_PORTAL = gql`
+export const GET_CUSTOMER_PORTAL = gql`
   query GetCustomerPortal {
     getCustomerPortal {
       url
     }
   }
 `
+
+export interface CustomerPortal {
+  url: string
+}
 
 export default function Account() {
   const { logout } = useUser()

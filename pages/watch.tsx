@@ -31,8 +31,8 @@ export default function Watch() {
   useUserRedirection({
     onUnauthenticated: ({ replace }) => replace('/login'),
     onAuthenticated: ({ replace }) => replace('/pricing'),
-    onBlocked: ({ replace }) => replace('/?blocked=true'),
-    onSuspended: ({ replace }) => replace('/?suspended=true'),
+    onBlocked: ({ replace }) => replace('/'),
+    onSuspended: ({ replace }) => replace('/'),
     onSubscribedUser: null,
   })
 

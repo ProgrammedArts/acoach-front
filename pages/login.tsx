@@ -23,8 +23,8 @@ export default function Login({ children }: { children?: ReactNode }) {
   useUserRedirection({
     onUnauthenticated: null,
     onAuthenticated: ({ replace }) => replace('/pricing'),
-    onBlocked: ({ replace }) => replace('/?blocked=true'),
-    onSuspended: ({ replace }) => replace('/?suspended=true'),
+    onBlocked: ({ replace }) => replace('/'),
+    onSuspended: ({ replace }) => replace('/'),
     onSubscribedUser: ({ replace }) => replace('/'),
   })
 
@@ -51,6 +51,8 @@ export default function Login({ children }: { children?: ReactNode }) {
         setShouldConfirmEmail(true)
       } else if (strapiError?.id === 'Auth.form.error.invalid') {
         setErrorMessage("L'adresse e-mail et/ou le mot de passe n'est pas valide")
+      } else if (strapiError?.id === 'Auth.form.error.blocked') {
+        setErrorMessage("Cet utilisateur est bloqué. Veuillez contacter l'administrateur du site.")
       } else {
         setErrorMessage('Une erreur serveur est survenue.')
       }

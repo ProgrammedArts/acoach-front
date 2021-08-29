@@ -120,7 +120,7 @@ describe('Watching list page', () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
     })
-    expect(mockReplace).toHaveBeenCalledWith('/?blocked=true')
+    expect(mockReplace).toHaveBeenCalledWith('/')
   })
 
   it('Redirects to home if suspended', async () => {
@@ -130,7 +130,7 @@ describe('Watching list page', () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalled()
     })
-    expect(mockReplace).toHaveBeenCalledWith('/?suspended=true')
+    expect(mockReplace).toHaveBeenCalledWith('/')
   })
 
   it('Shows links to workout videos to subscribed users', async () => {

@@ -313,7 +313,7 @@ describe('Forgot password page', () => {
       })
 
       expect(mockReplace).toHaveBeenCalledTimes(1)
-      expect(mockReplace).toHaveBeenCalledWith('/?blocked=true')
+      expect(mockReplace).toHaveBeenCalledWith('/')
     })
 
     it('Redirects to home if user has its subscription suspended', async () => {
@@ -326,7 +326,7 @@ describe('Forgot password page', () => {
       })
 
       expect(mockReplace).toHaveBeenCalledTimes(1)
-      expect(mockReplace).toHaveBeenCalledWith('/?suspended=true')
+      expect(mockReplace).toHaveBeenCalledWith('/')
     })
   })
 })
