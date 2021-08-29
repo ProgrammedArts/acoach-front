@@ -1,15 +1,14 @@
-import { ApolloError } from '@apollo/client'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { FormEvent, ReactNode, useState, useEffect, useCallback, MouseEvent } from 'react'
+import { FormEvent, MouseEvent, ReactNode, useState } from 'react'
+import isEmail from 'validator/lib/isEmail'
+import ErrorMessage from '../components/ErrorMessage'
 import FormInput from '../components/FormInput'
 import FormSubmit from '../components/FormSubmit'
-import useUser from '../hooks/useUser'
-import styles from './login.module.scss'
-import isEmail from 'validator/lib/isEmail'
+import getStrapGQLError from '../helpers/getStrapiGQLError'
 import validatePassword from '../helpers/validatePassword'
-import ErrorMessage from '../components/ErrorMessage'
-import { UserState } from '../providers/UserProvider'
+import useUser from '../hooks/useUser'
+import useUserRedirection from '../hooks/useUserRedirection'
+import styles from './login.module.scss'
 
 export default function Login({ children }: { children?: ReactNode }) {
   const [email, setEmail] = useState('')
@@ -19,37 +18,15 @@ export default function Login({ children }: { children?: ReactNode }) {
   const [shouldConfirmEmail, setShouldConfirmEmail] = useState(false)
   const [emailConfirmationSent, setEmailConfirmationSent] = useState(false)
 
-  const { login, sendEmailConfirmation, me, isLoggedIn } = useUser()
-  const { push } = useRouter()
+  const { login, sendEmailConfirmation } = useUser()
 
-  const redirectAuthenticatedUser = useCallback(
-    function redirectAuthenticatedUser(user: UserState) {
-      const { subscription, subscriptionActive, subscriptionEnd, blocked } = user
-
-      if (
-        subscription &&
-        subscriptionEnd &&
-        new Date(subscriptionEnd).getTime() > Date.now() &&
-        subscriptionActive
-      ) {
-        // has an active subscription
-        push('/watch')
-      } else if (
-        blocked ||
-        (subscription &&
-          subscriptionEnd &&
-          new Date(subscriptionEnd).getTime() > Date.now() &&
-          !subscriptionActive)
-      ) {
-        // is blocked or has his/her subscription terminated manually
-        push('/banned')
-      } else {
-        // no active subscription or subscription expired
-        push('/pricing')
-      }
-    },
-    [push]
-  )
+  useUserRedirection({
+    onUnauthenticated: null,
+    onAuthenticated: ({ replace }) => replace('/pricing'),
+    onBlocked: ({ replace }) => replace('/'),
+    onSuspended: ({ replace }) => replace('/'),
+    onSubscribedUser: ({ replace }) => replace('/'),
+  })
 
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -66,18 +43,18 @@ export default function Login({ children }: { children?: ReactNode }) {
 
     setRequestPending(true)
     try {
-      const { data } = await login({ email, password })
-      redirectAuthenticatedUser(data.me)
-    } catch (e) {
-      const { graphQLErrors }: ApolloError = e
-      const id = graphQLErrors[0]?.extensions?.exception.data?.message[0].messages[0].id
-      if (id === 'Auth.form.error.confirmed') {
+      await login({ email, password })
+    } catch (error) {
+      const strapiError = getStrapGQLError(error)
+      if (strapiError?.id === 'Auth.form.error.confirmed') {
         setErrorMessage('')
         setShouldConfirmEmail(true)
-      } else if (id === 'Auth.form.error.invalid') {
+      } else if (strapiError?.id === 'Auth.form.error.invalid') {
         setErrorMessage("L'adresse e-mail et/ou le mot de passe n'est pas valide")
+      } else if (strapiError?.id === 'Auth.form.error.blocked') {
+        setErrorMessage("Cet utilisateur est bloqué. Veuillez contacter l'administrateur du site.")
       } else {
-        setErrorMessage('Une erreur est survenue. Veuillez réessayer ultérieurement.')
+        setErrorMessage('Une erreur serveur est survenue.')
       }
     }
     setRequestPending(false)
@@ -86,16 +63,16 @@ export default function Login({ children }: { children?: ReactNode }) {
   function clickSendEmailConfirmation(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault()
 
-    sendEmailConfirmation({ email }).then(() => {
-      setEmailConfirmationSent(true)
-    })
+    sendEmailConfirmation({ email }).then(
+      () => {
+        setErrorMessage('')
+        setEmailConfirmationSent(true)
+      },
+      () => {
+        setErrorMessage('Une erreur serveur est survenue.')
+      }
+    )
   }
-
-  useEffect(() => {
-    if (isLoggedIn() && me) {
-      redirectAuthenticatedUser(me)
-    }
-  }, [me, isLoggedIn, redirectAuthenticatedUser])
 
   return (
     <div className={styles.Login}>
@@ -104,7 +81,7 @@ export default function Login({ children }: { children?: ReactNode }) {
           {children ? children : <h1>Connexion</h1>}
           <form onSubmit={submitLogin}>
             <FormInput
-              label="Addresse électronique"
+              label="Adresse e-mail"
               id="email"
               onChange={({ target: { value } }) => setEmail(value)}
             />
@@ -115,7 +92,9 @@ export default function Login({ children }: { children?: ReactNode }) {
               onChange={({ target: { value } }) => setPassword(value)}
             />
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            <FormSubmit disabled={requestPending}>Connexion</FormSubmit>
+            <FormSubmit disabled={requestPending} role="button">
+              Connexion
+            </FormSubmit>
           </form>
           <div className={styles.forgotPassword}>
             <Link
@@ -144,6 +123,7 @@ export default function Login({ children }: { children?: ReactNode }) {
               .
             </div>
           )}
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           {emailConfirmationSent && (
             <div className={styles.sendEmailConfirmation}>
               Vous allez recevoir un e-mail avec un lien pour confirmer votre adresse e-mail.

@@ -3,12 +3,14 @@ import { gql, useQuery } from '@apollo/client'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect } from 'react'
+import ErrorMessage from '../components/ErrorMessage'
 import useUser from '../hooks/useUser'
+import useUserRedirection from '../hooks/useUserRedirection'
 import { UserState } from '../providers/UserProvider'
 import styles from './watch.module.scss'
 
 const GET_VIDEOS = gql`
-  {
+  query GetWorkoutVideos {
     workoutVideos {
       id
       title
@@ -24,54 +26,27 @@ export interface WorkoutVideo {
 }
 
 export default function Watch() {
-  const { data } = useQuery<{ workoutVideos: WorkoutVideo[] }>(GET_VIDEOS)
+  const { data, error } = useQuery<{ workoutVideos: WorkoutVideo[] }>(GET_VIDEOS)
 
-  const { push } = useRouter()
-  const { me, isLoggedIn } = useUser()
-
-  const redirectAuthenticatedUser = useCallback(
-    function redirectAuthenticatedUser(user: UserState) {
-      const { subscription, subscriptionActive, subscriptionEnd, blocked } = user
-
-      if (
-        blocked ||
-        (subscription &&
-          subscriptionEnd &&
-          new Date(subscriptionEnd).getTime() > Date.now() &&
-          !subscriptionActive)
-      ) {
-        // is blocked or has his/her subscription terminated manually
-        push('/banned')
-      } else if (
-        !blocked &&
-        (!subscription ||
-          (subscription && subscriptionEnd && new Date(subscriptionEnd).getTime() < Date.now()))
-      ) {
-        // no active subscription or subscription expired
-        push('/pricing')
-      }
-    },
-    [push]
-  )
-
-  useEffect(() => {
-    if (isLoggedIn() && me) {
-      redirectAuthenticatedUser(me)
-    } else if (!isLoggedIn()) {
-      push('/pricing')
-    }
-  }, [me, isLoggedIn, push, redirectAuthenticatedUser])
+  useUserRedirection({
+    onUnauthenticated: ({ replace }) => replace('/login'),
+    onAuthenticated: ({ replace }) => replace('/pricing'),
+    onBlocked: ({ replace }) => replace('/'),
+    onSuspended: ({ replace }) => replace('/'),
+    onSubscribedUser: null,
+  })
 
   return (
     <div className={styles.Watch}>
       {data
         ? data.workoutVideos.map(({ id, title, thumbnailURL }) => (
-            <div className={styles.videoPreview} key={id}>
+            <div className={styles.videoPreview} key={id} data-testid="preview">
               <img src={thumbnailURL} alt={title} />
               <Link href={`/watch/${id}`}>{title}</Link>
             </div>
           ))
         : null}
+      {error && <ErrorMessage>Une erreur serveur est survenue.</ErrorMessage>}
     </div>
   )
 }

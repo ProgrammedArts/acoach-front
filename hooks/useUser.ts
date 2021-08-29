@@ -1,10 +1,9 @@
 import {
-  gql,
-  useMutation,
-  OperationVariables,
   ApolloQueryResult,
-  ApolloError,
   FetchResult,
+  gql,
+  OperationVariables,
+  useMutation,
 } from '@apollo/client'
 import { useCallback, useContext } from 'react'
 import { UserContext, UserState } from '../providers/UserProvider'
@@ -83,6 +82,18 @@ export interface SendEmailConfirmationMutation {
   }
 }
 
+const CHANGE_PASSWORD_MUTATION = gql`
+  mutation ChangePassword($password: String!, $newPassword: String!) {
+    changePassword(input: { password: $password, newPassword: $newPassword }) {
+      email
+    }
+  }
+`
+
+export interface ChangePasswordMutation {
+  changePassword: UserState
+}
+
 export interface LoginOptions {
   email: string
   password: string
@@ -98,7 +109,7 @@ export interface ForgotPasswordOptions {
   email: string
 }
 
-export interface SendEmailConfirmation {
+export interface SendEmailConfirmationOptions {
   email: string
 }
 
@@ -106,6 +117,11 @@ export interface ResetPasswordOptions {
   password: string
   passwordConfirmation: string
   code: string
+}
+
+export interface ChangePasswordOptions {
+  password: string
+  newPassword: string
 }
 
 export interface UseUser {
@@ -116,7 +132,7 @@ export interface UseUser {
     }>
   >
   isLoggedIn: () => boolean
-  login: ({ email, password }: LoginOptions) => Promise<
+  login: (options: LoginOptions) => Promise<
     ApolloQueryResult<{
       me: UserState
     }>
@@ -126,28 +142,23 @@ export interface UseUser {
       me: UserState
     }>
   >
-  signUp: ({
-    realname,
-    email,
-    password,
-  }: SignUpOptions) => Promise<
-    FetchResult<SignUpMutation, Record<string, any>, Record<string, any>>
-  >
-  forgotPassword: ({
-    email,
-  }: ForgotPasswordOptions) => Promise<
-    FetchResult<ForgotPasswordMutation, Record<string, any>, Record<string, any>>
-  >
-  resetPassword: ({ password, passwordConfirmation, code }: ResetPasswordOptions) => Promise<
+  signUp: (
+    options: SignUpOptions
+  ) => Promise<FetchResult<SignUpMutation, Record<string, any>, Record<string, any>>>
+  forgotPassword: (
+    options: ForgotPasswordOptions
+  ) => Promise<FetchResult<ForgotPasswordMutation, Record<string, any>, Record<string, any>>>
+  resetPassword: (options: ResetPasswordOptions) => Promise<
     ApolloQueryResult<{
       me: UserState
     }>
   >
-  sendEmailConfirmation: ({
-    email,
-  }: SendEmailConfirmation) => Promise<
-    FetchResult<SendEmailConfirmation, Record<string, any>, Record<string, any>>
-  >
+  sendEmailConfirmation: (
+    options: SendEmailConfirmationOptions
+  ) => Promise<FetchResult<SendEmailConfirmationMutation, Record<string, any>, Record<string, any>>>
+  changePassword: (
+    options: ChangePasswordOptions
+  ) => Promise<FetchResult<ChangePasswordMutation, Record<string, any>, Record<string, any>>>
 }
 
 export default function useUser(): UseUser {
@@ -156,9 +167,10 @@ export default function useUser(): UseUser {
   const [loginMutation] = useMutation<LoginMutation>(LOGIN_MUTATION)
   const [forgotPasswordMutation] = useMutation<ForgotPasswordMutation>(FORGOT_PASSWORD_MUTATION)
   const [resetPasswordMutation] = useMutation<ResetPasswordMutation>(RESET_PASSWORD_MUTATION)
-  const [sendEmailConfirmationMutation] = useMutation<SendEmailConfirmation>(
+  const [sendEmailConfirmationMutation] = useMutation<SendEmailConfirmationMutation>(
     SEND_EMAIL_CONFIRMATION_MUTATION
   )
+  const [changePasswordMutation] = useMutation<ChangePasswordMutation>(CHANGE_PASSWORD_MUTATION)
 
   const login = useCallback(
     ({ email, password }: LoginOptions) =>
@@ -222,13 +234,24 @@ export default function useUser(): UseUser {
   )
 
   const sendEmailConfirmation = useCallback(
-    ({ email }: SendEmailConfirmation) =>
+    ({ email }: SendEmailConfirmationOptions) =>
       sendEmailConfirmationMutation({
         variables: {
           email,
         },
       }),
     [sendEmailConfirmationMutation]
+  )
+
+  const changePassword = useCallback(
+    ({ password, newPassword }: ChangePasswordOptions) =>
+      changePasswordMutation({
+        variables: {
+          password,
+          newPassword,
+        },
+      }),
+    [changePasswordMutation]
   )
 
   const isLoggedIn = useCallback(() => !!localStorage.getItem('token'), [])
@@ -243,5 +266,6 @@ export default function useUser(): UseUser {
     forgotPassword,
     resetPassword,
     sendEmailConfirmation,
+    changePassword,
   }
 }

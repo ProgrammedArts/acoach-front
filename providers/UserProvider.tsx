@@ -29,7 +29,7 @@ export function userReducer(
 }
 
 export const ME = gql`
-  {
+  query Me {
     me {
       realname
       email
@@ -44,7 +44,7 @@ export const ME = gql`
   }
 `
 
-export default function UserProvider({ children }: { children: ReactNode }) {
+export default function UserProvider({ children }: { children: ReactNode | undefined }) {
   const [state, dispatch] = useReducer<typeof userReducer>(userReducer, null)
   const { data, refetch, error } = useQuery<{ me: UserState }>(ME, {
     fetchPolicy: 'no-cache',
